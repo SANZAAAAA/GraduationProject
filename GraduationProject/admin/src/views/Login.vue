@@ -33,6 +33,7 @@
               v-model="loginForm.password"
               type="password"
               autocomplete="off"
+              show-password
             />
           </el-form-item>
           <br />
@@ -42,7 +43,7 @@
           <br />
           <el-form-item class="center">
             <router-link to="/Signup" class="text-link">
-              Have no account? Click here to register a new account
+              Have no account? Click here to create a new account
             </router-link>
           </el-form-item>
         </el-form>
@@ -92,7 +93,8 @@ const submitForm = () => {
         console.log(res.data);
         if (res.data.ActionType === "OK") {
           // console.log(res.data.data)
-          store.commit("changeUserInfo", res.data.data)
+          store.commit("changeUserInfo", res.data.data);
+          console.log(res.data.data);
           router.push("/home");
           // axios拦截器设置token// localStorage.setItem("token", "login successs");
         } else {

@@ -16,3 +16,8 @@ const UserType = {
 const UserModel = mongoose.model("user", new Schema(UserType))
 
 module.exports = UserModel
+
+
+// todo:
+//     1. 首页读取introduction
+//     2. 个人中心修改密码  √
