@@ -1,0 +1,7 @@
+# MongoDB 数据文件
+/GraduationProject/db/
+*.lock
+*.wt
+*.turtle
+diagnostic.data/
+journal/
