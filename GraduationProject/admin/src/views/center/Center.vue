@@ -54,8 +54,8 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="个人简介" prop="introduction">
-              <el-input type="textarea" rows="6" v-model="userForm.introduction" />
+            <el-form-item label="个人简介" prop="introduction" class="modify-intro">
+              <el-input type="textarea" rows="15" v-model="userForm.introduction" />
             </el-form-item>
             <el-form-item label="头像" prop="avatar">
               <Upload :avatar="userForm.avatar" @avatarChange="handleChangeAvatar" />
@@ -169,12 +169,12 @@ const userFormRules = reactive({
   account: [{ required: true }],
   username: [
     { required: true, message: "请输入用户名", trigger: "blur" },
-    { min: 1, max: 20, message: "Length should be 3 to 5", trigger: "blur" },
+    { min: 1, max: 15, message: "长度应为1到15个字符", trigger: "blur" },
   ],
   gender: [{ required: true, message: "请选择性别", trigger: "blur" }],
   introduction: [
     { required: true, message: "请输入个人介绍", trigger: "blur" },
-    { min: 0, max: 500, message: "长度不超过500", trigger: "blur" },
+    { min: 0, max: 500, message: "个人简介长度不超过500", trigger: "blur" },
   ],
   avatar: [{ required: false }],
 });
@@ -265,6 +265,21 @@ const submitPassword = () => {
   margin-top: 20px;
   .box-card {
     text-align: center;
+  }
+}
+.modify-intro{
+  ::-webkit-scrollbar{
+    width: 5px;
+    height: 5px;
+    position: absolute;
+  }
+  
+  ::-webkit-scrollbar-thumb{
+    background:#756666;
+  }
+  
+  ::-webkit-scrollbar-track{
+    background:#ddd;
   }
 }
 </style>

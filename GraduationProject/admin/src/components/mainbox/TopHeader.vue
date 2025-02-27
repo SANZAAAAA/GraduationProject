@@ -8,10 +8,7 @@
       <span> 你好， {{$store.state.userInfo.username}} </span>&nbsp;&nbsp;&nbsp;
       <el-dropdown>
         <span class="el-dropdown-link">
-            <el-icon :size="25" color="white"><UserFilled /></el-icon>
-          <el-icon class="el-icon--right">
-            <arrow-down />
-          </el-icon>
+          <el-avatar :size="45" :src="avatarUrl" />
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -25,9 +22,10 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { Menu, UserFilled } from "@element-plus/icons-vue";
+import { Menu } from "@element-plus/icons-vue";
 
 const store = useStore();
 const router = useRouter();
@@ -35,6 +33,12 @@ const router = useRouter();
 const handleCollapse = () => {
   store.commit("changeSideCollapse");
 };
+
+const avatarUrl = computed(() =>
+  store.state.userInfo.avatar
+    ? "http://localhost:3000" + store.state.userInfo.avatar
+    : "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+);
 
 const handleCenter = () => {
     router.push("/center")
@@ -75,5 +79,6 @@ const handleLogout = () => {
     :focus-visible{
         outline:none;
     }
+    margin-right: 10px;
 }
 </style>

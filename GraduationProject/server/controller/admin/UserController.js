@@ -1,38 +1,86 @@
 const UserService = require("../../service/admin/UserService");
 const JWT = require("../../util/JWT");
+const { passwordHash } = require("../../util/PasswordHandler");
 
 const UserController = {
   login: async (req, res) => {
-    // console.log(req.body);
+    console.log(req.body);
 
     //req.body
-    var result = await UserService.login(req.body);
+    const user = await UserService.login(req.body);
 
-    if (result.length === 0) {
+    if (!user) {
       res.send({
-        code: "-1",
-        error: "密码错误",
+        ActionType: "Reject",
+        Message: "账号或密码错误", // 模糊提示更安全
       });
     } else {
-      // 生成token
       const token = JWT.generate(
         {
-          _id: result[0]._id,
-          account: result[0].account,
+          _id: user._id,
+          account: user.account,
+          role: user.role,
         },
         "1d"
       );
+
+      // 4. 设置响应头并返回数据
       res.header("Authorization", token);
       res.send({
         ActionType: "OK",
         data: {
-          account: result[0].account, //账号
-          username: result[0].username, //用户名
-          gender: result[0].gender ? result[0].gender : 0, //性别, 0, 1, 2
-          introduction: result[0].introduction,
-          avatar: result[0].avatar, //头像
-          role: result[0].role, //管理1,编辑2
+          account: user.account,
+          username: user.username,
+          gender: user.gender,
+          introduction: user.introduction,
+          avatar: user.avatar,
+          role: user.role,
         },
+      });
+    }
+
+    // 已废弃, 无hash
+    // if (result.length === 0) {
+    //   res.send({
+    //     code: "-1",
+    //     error: "密码错误",
+    //   });
+    // } else {
+    //   // 生成token
+    //   const token = JWT.generate(
+    //     {
+    //       _id: result[0]._id,
+    //       account: result[0].account,
+    //     },
+    //     "1d"
+    //   );
+    //   res.header("Authorization", token);
+    //   res.send({
+    //     ActionType: "OK",
+    //     data: {
+    //       account: result[0].account, //账号
+    //       username: result[0].username, //用户名
+    //       gender: result[0].gender ? result[0].gender : 0, //性别, 0, 1, 2
+    //       introduction: result[0].introduction,
+    //       avatar: result[0].avatar, //头像
+    //       role: result[0].role, //管理1,编辑2
+    //     },
+    //   });
+    // }
+  },
+
+  signup: async (req, res) => {
+    //req.body
+    const isExist = await UserService.signup(req.body);
+    if (isExist) {
+      res.send({
+        ActionType: "Reject",
+        Message: "账号已存在",
+      });
+    } else {
+      res.send({
+        ActionType: "OK",
+        Message: "注册成功",
       });
     }
   },
@@ -88,11 +136,28 @@ const UserController = {
     await UserService.changepassword({
       _id: payload._id,
       password,
-    })
+    });
     res.send({
-      ActionType:"OK",
-    })
-  }
+      ActionType: "OK",
+    });
+  },
+
+  add: async (req, res) => {
+    // console.log(req.body, req.file);
+
+    const { account, password, role, gender } = req.body;
+
+    const isExist = await UserService.add({
+      account,
+      password,
+      role: Number(role),
+      gender: Number(gender),
+    });
+    res.send({
+      ActionType: isExist ? "Reject" : "OK", // 存在返回Reject，成功返回OK
+      Message: isExist ? "账号已存在" : "创建成功",
+    });
+  },
 };
 
 module.exports = UserController;

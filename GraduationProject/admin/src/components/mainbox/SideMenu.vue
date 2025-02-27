@@ -57,7 +57,6 @@ import {
   MessageBox,
   Pointer,
 } from "@element-plus/icons-vue";
-import { ElCollapseTransition } from "element-plus";
 </script>
 
 <style lang="scss" scoped>

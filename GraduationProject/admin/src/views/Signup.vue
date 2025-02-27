@@ -67,15 +67,65 @@
 <script setup>
 import { ElMessage } from "element-plus";
 import { reactive, ref } from "vue";
-import axios from "axios";
+import { useRouter } from "vue-router";
+import signup from "@/util/signup";
+
+const router = useRouter();
 
 const signupForm = reactive({
   account: "",
   password: "",
   reconfirm: "",
 }); //表单绑定响应式対象
-
 const signupFormRef = ref(); //表单引用对象
+
+//提交表单函数
+const submitForm = async () => {
+  // 1. 将表单验证转换为 Promise
+  const isValid = await new Promise((resolve) => {
+      signupFormRef.value.validate(resolve);
+    });
+    
+    if (!isValid) return;
+
+    // 2. 验证密码一致性
+    if (signupForm.password !== signupForm.reconfirm) {
+      ElMessage.error("两次密码不匹配");
+      return;
+    }
+
+    // 3. 发起注册请求（正确使用 await）
+    const res = await signup("/adminapi/user/signup", signupForm);
+    
+    // 4. 处理响应
+    if (res.ActionType === "OK") {
+      ElMessage.success(res.Message);
+      // 跳转到登录页
+      router.push('/login');
+    } else {
+      ElMessage.error(res.Message);
+  }
+
+
+  //
+  // signupFormRef.value.validate((valid) => {
+  //   if (valid) {
+  //     if (signupForm.password === signupForm.reconfirm) {
+  //       signup("/adminapi/user/signup", password).then((res) => {
+  //         if(res.ActionType === "OK") {
+  //           ElMessage.success(res.Message);
+  //         } else if (res.ActionType === "Reject") {
+  //           ElMessage.error(res.Message);
+  //         }
+  //       });
+  //     } else {
+  //       ElMessage.error("两次密码不匹配");
+  //     }
+  //   }
+  // });
+};
+
+
 const particlesLoaded = async (container) => {
   console.log("Particles container loaded", container);
 };
@@ -103,19 +153,6 @@ const signupRules = reactive({
     },
   ],
 });
-
-//提交表单函数
-const submitForm = () => {
-  signupFormRef.value.validate((valid) => {
-    if (valid) {
-      if (signupForm.password === signupForm.reconfirm) {
-        localStorage.setItem("token", "signup successs");
-      } else {
-        ElMessage.error("两次密码不匹配");
-      }
-    }
-  });
-};
 // 配置particles的样式
 const style = {
   background: {

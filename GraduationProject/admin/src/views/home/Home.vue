@@ -83,6 +83,7 @@ console.log(store.state);
     box-sizing: border-box; /* 包含 padding 在宽度内 */
 
     .introduction-text {
+      font-size: large;
       white-space: pre-line; /* 保留换行符，合并其他空白符 */
       word-wrap: break-word; /* 允许长单词换行 */
     }

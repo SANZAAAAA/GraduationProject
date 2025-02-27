@@ -55,17 +55,20 @@
 <script setup>
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
 import { ElMessage } from "element-plus";
+import { ElLoading } from "element-plus";
 import { useStore } from "vuex";
+import login from "@/util/login";
 
 const store = useStore();
+const router = useRouter();
 
+
+const loginFormRef = ref(); //表单引用对象
 const loginForm = reactive({
   account: "",
   password: "",
 }); //表单绑定响应式対象
-
 const loginRules = reactive({
   account: [
     {
@@ -83,30 +86,63 @@ const loginRules = reactive({
   ],
 });
 
-const router = useRouter();
-//提交表单函数
-const submitForm = () => {
-  loginFormRef.value.validate((valid) => {
-    if (valid) {
-      // localStorage.setItem("token", "login successs");
-      axios.post("/adminapi/user/login", loginForm).then((res) => {
-        console.log(res.data);
-        if (res.data.ActionType === "OK") {
-          // console.log(res.data.data)
-          store.commit("changeUserInfo", res.data.data);
-          console.log(res.data.data);
-          router.push("/home");
-          // axios拦截器设置token// localStorage.setItem("token", "login successs");
-        } else {
-          ElMessage.error("密码错误");
-        }
-      });
-      // router.push("/home");
-    }
+const submitForm = async () => {
+  const loading = ElLoading.service({
+    lock: true,
+    text: "登录中...",
   });
+
+  // 1. 执行表单验证
+  const isValid = await new Promise((resolve) => {
+    loginFormRef.value.validate(resolve);
+  });
+  
+
+  if (!isValid) return;
+  // 2. 显示加载状态
+  // 3. 发起登录请求
+  const res = await login("/adminapi/user/login", loginForm);
+  // 4. 处理响应
+
+  // 用计时器是为了凸显用了一个loading界面...
+  setTimeout(() => {
+    if (res.ActionType === "OK") {
+    // 存储用户信息
+    store.commit("changeUserInfo", res.data);
+    ElMessage.success("登录成功");
+    // 路由跳转
+    router.push("/home");
+  } else {
+    ElMessage.error("账号或密码错误");
+  }
+  }, 500);
+  // 关闭加载状态
+  setTimeout(loading?.close, 500);
+
 };
 
-const loginFormRef = ref(); //表单引用对象
+// //提交表单函数
+// const submitForm = async () => {
+//   loginFormRef.value.validate((valid) => {
+//     if (valid) {
+//       // localStorage.setItem("token", "login successs");
+//       axios.post("/adminapi/user/login", loginForm).then((res) => {
+//         console.log(res.data);
+//         if (res.data.ActionType === "OK") {
+//           // console.log(res.data.data)
+//           store.commit("changeUserInfo", res.data.data);
+//           console.log(res.data.data);
+//           router.push("/home");
+//           // axios拦截器设置token// localStorage.setItem("token", "login successs");
+//         } else {
+//           ElMessage.error("密码错误");
+//         }
+//       });
+//       // router.push("/home");
+//     }
+//   });
+// };
+
 const particlesLoaded = async (container) => {
   console.log("Particles container loaded", container);
 };

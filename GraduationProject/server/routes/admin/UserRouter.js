@@ -8,10 +8,12 @@ const upload = multer({ dest: "public/avataruploads/" });
 
 /* GET home page. */
 UserRouter.post("/adminapi/user/login", UserController.login);
+UserRouter.post("/adminapi/user/signup", UserController.signup);
 UserRouter.post("/adminapi/user/change-password", UserController.changepassword);
 UserRouter.post("/adminapi/user/upload",
   upload.single("file"),
   UserController.upload
 );
+UserRouter.post("/adminapi/user/add", UserController.add);
 
 module.exports = UserRouter;
