@@ -15,5 +15,10 @@ UserRouter.post("/adminapi/user/upload",
   UserController.upload
 );
 UserRouter.post("/adminapi/user/add", UserController.add);
+UserRouter.put("/adminapi/user/list/:id", UserController.updateList);
+
+// 实现用户列表的增删改查
+UserRouter.get("/adminapi/user/list", UserController.getList);
+UserRouter.delete("/adminapi/user/list/:id", UserController.delList);
 
 module.exports = UserRouter;

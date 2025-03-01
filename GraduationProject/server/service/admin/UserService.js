@@ -1,3 +1,4 @@
+const { updateList } = require("../../controller/admin/UserController");
 const UserModel = require("../../models/UserModel");
 const { passwordHash } = require("../../util/PasswordHandler");
 
@@ -25,13 +26,12 @@ const UserService = {
     // 用户存在
     if (user) return true;
 
-    // 密码加密
-    const hashedPassword = await passwordHash(password);
-
+    // 创建用户
     await UserModel.create({
       account,
       username: account,
-      password: hashedPassword,
+      // 密码加密后存储
+      password: await passwordHash(password),
     });
     return false;
   },
@@ -71,17 +71,50 @@ const UserService = {
       }
     );
   },
+
+
   add: async ({ account, password, role, gender }) => {
     const existingUser = await UserModel.findOne({ account });
     if (existingUser) return true;
+    const hashedPassword = await passwordHash(password);
     await UserModel.create({
       account,
       username: account,
-      password,
+      password: hashedPassword,
       role,
       gender,
     });
     return false;
+  },
+  getList: async () => {
+    return UserModel.find({},["account", "username", "role", "avatar", "gender",]).sort({ role: 1 });
+  },
+  delList: async ({ _id }) => {
+    return UserModel.deleteOne({ _id });
+  },
+  updateList: async ({ _id, account, password, role }) => {
+    if (password) {
+      return UserModel.updateOne(
+        {
+          _id,
+        },
+        {
+          account,
+          password: await passwordHash(password),
+          role,
+        }
+      );
+    } else {
+      return UserModel.updateOne(
+        {
+          _id,
+        },
+        {
+          account,
+          role,
+        }
+      );
+    }
   },
 };
 

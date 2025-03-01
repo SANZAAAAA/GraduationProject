@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-page-header content="个人中心" icon="" title="占位" />
+    <el-page-header content="个人中心" icon="" title="占位" class="header" />
 
     <el-row :gutter="20" class="el-row">
       <el-col :span="8">
@@ -124,7 +124,7 @@ import { computed, ref, reactive } from "vue";
 import { ElMessage } from "element-plus";
 import upload from "@/util/upload.js";
 import changePassword from "@/util/changePassword.js";
-import { fileToImage, resizeImageFile } from "@/util/imgSmoothing.js"
+import { fileToImage, resizeImageFile } from "@/util/imgSmoothing.js";
 import Upload from "@/components/upload/Upload.vue";
 import { useRouter } from "vue-router";
 
@@ -185,7 +185,7 @@ const passwordFormRules = reactive({
     { min: 6, message: "密码至少6位", trigger: "blur" },
   ],
   check: [
-    { required: true, message: "请确认密码", trigger: "blur" },
+    { required: true, message: "请再次确认密码", trigger: "blur" },
     {
       validator: (rule, value, callback) => {
         if (value !== passwordForm.password) {
@@ -209,7 +209,6 @@ const avatarUrl = computed(() =>
 const handleChangeAvatar = (file) => {
   userForm.avatar = URL.createObjectURL(file);
   userForm.file = file;
-  
 };
 
 // canvas提高avatar清晰度
@@ -222,8 +221,9 @@ const handleChangeAvatar = (file) => {
 // };
 
 const handleClose = (done) => {
-  passwordForm.password = "",
-  passwordForm.check = "",
+  passwordForm.password = "";
+  passwordForm.check = "";
+  passwordFormRef.value?.resetFields();
   done();
 };
 
@@ -261,25 +261,29 @@ const submitPassword = () => {
 </script>
 
 <style lang="scss" scoped>
+.header{
+  margin-top:20px;
+  margin-left:20px;
+}
 .el-row {
   margin-top: 20px;
   .box-card {
     text-align: center;
   }
 }
-.modify-intro{
-  ::-webkit-scrollbar{
+.modify-intro {
+  ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
     position: absolute;
   }
-  
-  ::-webkit-scrollbar-thumb{
-    background:#756666;
+
+  ::-webkit-scrollbar-thumb {
+    background: #756666;
   }
-  
-  ::-webkit-scrollbar-track{
-    background:#ddd;
+
+  ::-webkit-scrollbar-track {
+    background: #ddd;
   }
 }
 </style>

@@ -1,7 +1,10 @@
 import axios from "axios";
 
-function addUser(path, userForm) {
-  axios.post(path, userForm).then(res=>res.data);
+const addUser = async(path, userForm) => {
+  const res = await axios.post(path, userForm);
+  return res.data;
 }
+
+
 
 export default addUser;

@@ -19,17 +19,17 @@
           class="loginform"
           @keyup.native.enter="submitForm()"
         >
-          <el-form-item label="Account" prop="account">
+          <el-form-item label="账号" prop="account" class="item">
             <el-input
-              style="width: 380px"
+              style="width: 330px"
               v-model="loginForm.account"
               autocomplete="off"
             />
           </el-form-item>
           <br />
-          <el-form-item label="Password" prop="password">
+          <el-form-item label="密码" prop="password" class="item">
             <el-input
-              style="width: 380px"
+              style="width: 330px"
               v-model="loginForm.password"
               type="password"
               autocomplete="off"
@@ -38,7 +38,7 @@
           </el-form-item>
           <br />
           <el-form-item class="center">
-            <el-button type="primary" @click="submitForm()"> Log in </el-button>
+            <el-button type="primary" @click="submitForm()"> 登录 </el-button>
           </el-form-item>
           <br />
           <el-form-item class="center">
@@ -55,14 +55,12 @@
 <script setup>
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
-import { ElLoading } from "element-plus";
+import { ElMessage, ElLoading } from "element-plus";
 import { useStore } from "vuex";
 import login from "@/util/login";
 
 const store = useStore();
 const router = useRouter();
-
 
 const loginFormRef = ref(); //表单引用对象
 const loginForm = reactive({
@@ -73,52 +71,61 @@ const loginRules = reactive({
   account: [
     {
       required: true,
-      message: "please enter the account",
+      message: "请输入账号",
       trigger: "blur",
+    },
+    {
+      validator: (_, value, callback) => {
+        if (!/^[a-zA-Z0-9]*$/.test(value)) {
+          callback(new Error("只能包含英文或数字"));
+        } else {
+          callback();
+        }
+      },
     },
   ],
   password: [
     {
       required: true,
-      message: "please enter the password",
+      message: "请输入密码",
       trigger: "blur",
     },
   ],
 });
 
 const submitForm = async () => {
+  // 1. 执行表单验证
+  const isValid = await new Promise((resolve) => {
+    loginFormRef.value.validate(resolve);
+  });
+
+  if (!isValid) return;
+  // 2. 显示加载状态
+  // 3. 发起登录请求
+
   const loading = ElLoading.service({
     lock: true,
     text: "登录中...",
   });
 
-  // 1. 执行表单验证
-  const isValid = await new Promise((resolve) => {
-    loginFormRef.value.validate(resolve);
-  });
-  
-
-  if (!isValid) return;
-  // 2. 显示加载状态
-  // 3. 发起登录请求
   const res = await login("/adminapi/user/login", loginForm);
   // 4. 处理响应
 
-  // 用计时器是为了凸显用了一个loading界面...
+  // 模拟延迟
   setTimeout(() => {
     if (res.ActionType === "OK") {
-    // 存储用户信息
-    store.commit("changeUserInfo", res.data);
-    ElMessage.success("登录成功");
-    // 路由跳转
-    router.push("/home");
-  } else {
-    ElMessage.error("账号或密码错误");
-  }
+      // 存储用户信息
+      store.commit("changeUserInfo", res.data);
+      ElMessage.success("登录成功");
+      // 路由跳转
+      router.push("/home");
+    } else {
+      ElMessage.error("账号或密码错误");
+    }
   }, 500);
   // 关闭加载状态
   setTimeout(loading?.close, 500);
-
+  console.log("当前登录用户: ", res.data);
 };
 
 // //提交表单函数
@@ -253,6 +260,9 @@ const style = {
   }
   .loginform {
     margin-top: 20px;
+  }
+  .item {
+    margin-left: 28px;
   }
 }
 

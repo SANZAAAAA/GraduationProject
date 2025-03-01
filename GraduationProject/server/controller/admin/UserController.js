@@ -158,6 +158,39 @@ const UserController = {
       Message: isExist ? "账号已存在" : "创建成功",
     });
   },
+
+  getList: async (req, res) => {
+    const result = await UserService.getList();
+    res.send({
+      ActionType: "OK",
+      data: result,
+    });
+  },
+
+  delList: async (req, res) => {
+    
+    // console.log(req.params.id);
+
+    await UserService.delList({_id: req.params.id});
+    res.send({
+      ActionType: "OK",
+    });
+  },
+
+  updateList: async (req, res) => {
+
+    // console.log(req.params.id, req.body);
+
+    await UserService.updateList({
+      _id: req.params.id,
+      account: req.body.account,
+      password: req.body.password,
+      role: Number(req.body.role),
+    });
+    res.send({
+      ActionType: "OK",
+    });
+  },
 };
 
 module.exports = UserController;

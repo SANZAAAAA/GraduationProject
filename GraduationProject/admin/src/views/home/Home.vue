@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-page-header content="首页" icon="" title="占位" />
+    <el-page-header content="首页" icon="" title="占位" class="header"/>
 
-    <el-card class="box-card">
+    <el-card class="box-card1">
       <el-row>
         <el-col :span="1"> </el-col>
         <el-col :span="2">
@@ -25,7 +25,7 @@
       </template>
     </el-card>
 
-    <el-card class="box-card">
+    <el-card class="box-card2">
       <template #header>
         <div class="card-header">
           <span>公司产品</span>
@@ -71,7 +71,29 @@ console.log(store.state);
 </script>
 
 <style lang="scss" scoped>
-.box-card {
+.header{
+  margin-top:20px;
+  margin-left:20px;
+}
+.box-card1 {
+  margin-top: 20px;
+  .custom-footer {
+    width: 100%; /* 确保宽度填充父容器 */
+    min-height: 40px; /* 最小高度（根据需求调整） */
+    white-space: normal; /* 允许文本换行 */
+    word-wrap: break-word; /* 长单词或URL换行 */
+    overflow-wrap: break-word; /* 现代浏览器更推荐使用 */
+    padding: 10px; /* 内边距（与 Element UI 默认风格一致） */
+    box-sizing: border-box; /* 包含 padding 在宽度内 */
+
+    .introduction-text {
+      font-size: large;
+      white-space: pre-line; /* 保留换行符，合并其他空白符 */
+      word-wrap: break-word; /* 允许长单词换行 */
+    }
+  }
+}
+.box-card2 {
   margin-top: 50px;
   .custom-footer {
     width: 100%; /* 确保宽度填充父容器 */

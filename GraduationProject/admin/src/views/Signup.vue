@@ -19,7 +19,7 @@
           class="signupform"
           @keyup.native.enter="submitForm()"
         >
-          <el-form-item label="Account" prop="account">
+          <el-form-item label="账号" prop="account">
             <el-input
               style="width: 330px"
               v-model="signupForm.account"
@@ -27,32 +27,47 @@
             />
           </el-form-item>
           <br />
-          <el-form-item label="Password" prop="password">
+          <el-form-item label="密码" prop="password">
             <el-input
               style="width: 330px"
               v-model="signupForm.password"
               type="password"
               autocomplete="off"
+              show-password
             />
           </el-form-item>
           <br />
-          <el-form-item label="Reconfirm password" prop="reconfirm">
+          <el-form-item label="确认密码" prop="reconfirm">
             <el-input
               style="width: 330px"
               v-model="signupForm.reconfirm"
               type="password"
               autocomplete="off"
+              show-password
             />
           </el-form-item>
           <br />
+
+          <!-- <el-form-item class="center">
+            <el-row :gutter="20">
+              <el-col :span="5"></el-col>
+              <el-col :span="5">
+                <el-button type="primary" @click="submitForm()"> 注册 </el-button>
+              </el-col>
+              <el-col :span="5">
+                <router-link to="/login" class="text-link">Go Back</router-link>
+              </el-col>
+            </el-row>
+          </el-form-item> -->
+
           <el-form-item class="center">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<el-button
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<el-button
               type="primary"
               @click="submitForm()"
             >
-              Sign in
+              注册
             </el-button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<router-link
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<router-link
               to="/Login"
               class="text-link"
               >Go Back</router-link
@@ -83,29 +98,28 @@ const signupFormRef = ref(); //表单引用对象
 const submitForm = async () => {
   // 1. 将表单验证转换为 Promise
   const isValid = await new Promise((resolve) => {
-      signupFormRef.value.validate(resolve);
-    });
-    
-    if (!isValid) return;
+    signupFormRef.value.validate(resolve);
+  });
 
-    // 2. 验证密码一致性
-    if (signupForm.password !== signupForm.reconfirm) {
-      ElMessage.error("两次密码不匹配");
-      return;
-    }
+  if (!isValid) return;
 
-    // 3. 发起注册请求（正确使用 await）
-    const res = await signup("/adminapi/user/signup", signupForm);
-    
-    // 4. 处理响应
-    if (res.ActionType === "OK") {
-      ElMessage.success(res.Message);
-      // 跳转到登录页
-      router.push('/login');
-    } else {
-      ElMessage.error(res.Message);
+  // 2. 验证密码一致性
+  if (signupForm.password !== signupForm.reconfirm) {
+    ElMessage.error("两次密码不匹配");
+    return;
   }
 
+  // 3. 发起注册请求（正确使用 await）
+  const res = await signup("/adminapi/user/signup", signupForm);
+
+  // 4. 处理响应
+  if (res.ActionType === "OK") {
+    ElMessage.success(res.Message);
+    // 跳转到登录页
+    router.push("/login");
+  } else {
+    ElMessage.error(res.Message);
+  }
 
   //
   // signupFormRef.value.validate((valid) => {
@@ -125,32 +139,30 @@ const submitForm = async () => {
   // });
 };
 
-
 const particlesLoaded = async (container) => {
   console.log("Particles container loaded", container);
 };
 
 const signupRules = reactive({
   account: [
+    { required: true, message: "请输入账号", trigger: "blur" },
     {
-      required: true,
-      message: "please enter the account",
-      trigger: "blur",
+      validator: (_, value, callback) => {
+        if (!/^[a-zA-Z0-9]*$/.test(value)) {
+          callback(new Error("只能包含英文或数字"));
+        } else {
+          callback();
+        }
+      },
     },
   ],
   password: [
-    {
-      required: true,
-      message: "please enter the password",
-      trigger: "blur",
-    },
+    { required: true, message: "请输入密码", trigger: "blur" },
+    { min: 6, message: "密码不少于6位", trigger: "blur" },
   ],
   reconfirm: [
-    {
-      required: true,
-      message: "please reconfirm the password",
-      trigger: "blur",
-    },
+    { required: true, message: "请再次确认密码", trigger: "blur" },
+    { min: 6, message: "", trigger: "blur" },
   ],
 });
 // 配置particles的样式
