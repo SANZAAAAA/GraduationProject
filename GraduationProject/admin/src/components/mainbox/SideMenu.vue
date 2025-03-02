@@ -27,7 +27,7 @@
           <el-icon><tools /></el-icon>
           <span>问卷管理</span>
         </template>
-        <el-menu-item index="/survey-manage/addsurvey">添加问卷</el-menu-item>
+        <el-menu-item index="/survey-manage/addsurvey">新建问卷</el-menu-item>
         <el-menu-item index="/survey-manage/surveylist">问卷列表</el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="/surveys">
@@ -63,7 +63,7 @@ import {
 const vAdmin = {
   mounted(el) {
     // console.log(el)
-    if (store.state.userInfo.role !== 1) {
+    if (store.state.userInfo.role === 2) {
       el.parentNode.removeChild(el)
     }
   }

@@ -10,7 +10,7 @@
             {{ store.state.userInfo.username }}
           </h3>
           <h5>
-            {{ store.state.userInfo.role == 1 ? "管理员" : "编辑" }}
+            {{ store.state.userInfo.role !== 0 ? store.state.userInfo.role !== 1 ? "用户" : "管理员" : "超级管理员" }}
           </h5>
         </el-card>
       </el-col>

@@ -28,6 +28,7 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
+              :disabled="item.value === 1 && userRole === 1"
             />
           </el-select>
         </el-form-item>
@@ -43,8 +44,9 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { useStore } from 'vuex';
 import addUser from "@/util/addUser";
 
 const options = [
@@ -84,6 +86,9 @@ const userFormRules = reactive({
   ],
   role: [{ required: true, message: "请选择权限", trigger: "blur" }],
 });
+
+const store = useStore();
+const userRole = computed(() => store.state.userInfo.role);
 
 const submitForm = () => {
   userFormRef.value.validate(async (valid) => {

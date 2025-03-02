@@ -1,6 +1,6 @@
 import Center from "@/views/center/Center.vue";
 import NotFound from "@/views/NotFound.vue";
-import SurveyAdd from "@/views/survey_manage/SurveyAdd.vue";
+import SurveyCreate from "@/views/survey_manage/SurveyCreate.vue";
 import SurveyList from "@/views/survey_manage/SurveyList.vue";
 import UserAdd from "@/views/user_manage/UserAdd.vue";
 import UserList from "@/views/user_manage/UserList.vue";
@@ -33,7 +33,7 @@ const routes = [
     },
     {
         path: "/survey-manage/addsurvey",
-        component: SurveyAdd
+        component: SurveyCreate
     },
     {
         path: "/survey-manage/surveylist",

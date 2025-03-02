@@ -63,7 +63,7 @@ router.beforeEach((to, from, next) => {
 
 const checkPermission = (item) => {
   if (item.reqAdmin) {
-    return store.state.userInfo.role === 1;
+    return store.state.userInfo.role !== 2;
   }
   return true;
 };

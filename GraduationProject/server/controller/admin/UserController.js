@@ -14,7 +14,6 @@ const UserController = {
         Message: "账号或密码错误", // 模糊提示更安全
       });
     } else {
-      console.log("JWT中打印:", user._id);
       const token = JWT.generate(
         {
           _id: user._id,

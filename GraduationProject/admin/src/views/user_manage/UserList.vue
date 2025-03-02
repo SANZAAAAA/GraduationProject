@@ -1,9 +1,19 @@
 <template>
   <div>
     <el-card>
-      <el-page-header content="用户列表" icon="" title="用户管理" />
+      <el-page-header content="用户列表" icon="" title="用户管理">
+        <template #extra>
+          <el-input
+            v-model="searchAccount"
+            style="width: 240px"
+            placeholder="请输入账号查找"
+            :suffix-icon="Search"
+            @keyup.enter="handleSearch"
+          />
+        </template>
+      </el-page-header>
 
-      <el-table :data="tableData" stripe style="width: 100%">
+      <el-table :data="currentPageData" stripe style="width: 100%">
         <el-table-column prop="account" label="账号" width="180" />
         <el-table-column prop="username" label="用户名" width="180" />
         <el-table-column label="头像" width="180">
@@ -24,7 +34,8 @@
         </el-table-column>
         <el-table-column label="权限" width="180">
           <template #default="scope">
-            <el-tag v-if="scope.row.role === 1"> 管理员 </el-tag>
+            <el-tag v-if="scope.row.role === 0" type="danger"> 超级管理员 </el-tag>
+            <el-tag v-else-if="scope.row.role === 1"> 管理员 </el-tag>
             <el-tag v-else class="ml-2" type="info"> 用户 </el-tag>
           </template>
         </el-table-column>
@@ -36,6 +47,7 @@
                 drawer = true;
                 onClickModify(scope.row);
               "
+              :disabled="scope.row.role !== 2 && userRole === 1"
             >
               编辑
             </el-button>
@@ -47,12 +59,19 @@
               @cancel="console.log('取消删除')"
             >
               <template #reference>
-                <el-button size="small" type="danger"> 删除 </el-button>
+                <el-button size="small" type="danger" :disabled="scope.row.role !== 2 && userRole === 1"> 删除 </el-button>
               </template>
             </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="filteredTableData.length"
+        @current-change="handleCurrentChange"
+        layout="total, prev, pager, next"
+      />
     </el-card>
     <el-drawer
       v-model="drawer"
@@ -76,7 +95,7 @@
             v-model="modifyForm.password"
             type="password"
             autocomplete="off"
-            placeholder = "不修改密码请留空"
+            placeholder="不修改密码请留空"
             show-password
           />
         </el-form-item>
@@ -109,13 +128,22 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import { ElMessage, ElLoading } from "element-plus";
+import { Search } from "@element-plus/icons-vue";
 import axios from "axios";
+import { useStore } from 'vuex';
 
 var rowptr = "";
+const tableData = ref([]);
+var filteredTableData = ref([]);
+onMounted(() => {
+  getTableData(true);
+});
+
 const drawer = ref(false);
 const modifyFormRef = ref();
+const searchAccount = ref();
 const modifyForm = reactive({
   account: "",
   password: "",
@@ -153,12 +181,6 @@ const modifyFormRules = {
   role: [{ required: true, message: "请选择权限", trigger: "change" }],
 };
 
-const tableData = ref([]);
-
-onMounted(() => {
-  getTableData(true);
-});
-
 const getTableData = async (init) => {
   const loading = ElLoading.service({
     lock: true,
@@ -173,6 +195,8 @@ const getTableData = async (init) => {
     if (res.data.ActionType === "OK") {
       // 存储用户信息
       tableData.value = res.data.data;
+      // 深拷贝tableData
+      filteredTableData.value = structuredClone(tableData.value);
       if (init) ElMessage.success("获取用户列表成功");
     } else {
       ElMessage.error("获取用户列表失败");
@@ -182,10 +206,35 @@ const getTableData = async (init) => {
   setTimeout(loading?.close, 250);
 };
 
+// 深拷贝tableData
+filteredTableData.value = structuredClone(tableData.value);
+
 const onClickModify = (data) => {
   rowptr = data;
   modifyForm.account = data.account;
   modifyForm.role = data.role;
+};
+
+const handleSearch = async () => {
+  if (!searchAccount.value) {
+    // 如果搜索值为空，可以恢复原始数据
+    filteredTableData.value = structuredClone(tableData.value);
+    return;
+  }
+  var isFound = false;
+  for (const item of tableData.value) {
+    // 使用 for...of 可中途 break
+    if (item.account === searchAccount.value) {
+      console.log("查找到的账号: ", item);
+      filteredTableData.value = [item];
+      ElMessage.success("查找成功");
+      isFound = true;
+      break; // 终止循环
+    }
+  }
+  if (!isFound) ElMessage.error("查无此账号");
+  console.log("tableData: ", tableData.value);
+  console.log("filteredTableData: ", filteredTableData.value);
 };
 
 const handleUpdate = async (data) => {
@@ -210,6 +259,21 @@ const handleDelete = async (data) => {
   }
 };
 
+// 分页配置
+const currentPage = ref(1); // 当前页码
+const pageSize = ref(15); // 每页最多显示行数
+// 计算当前页显示的数据
+const currentPageData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredTableData.value.slice(start, end);
+});
+
+// 页码变化事件
+const handleCurrentChange = (val) => {
+  currentPage.value = val;
+};
+
 const handleClose = (done) => {
   modifyForm.account = "";
   modifyForm.password = "";
@@ -222,10 +286,17 @@ const closeDrawer = () => {
   drawer.value = false; // 直接修改状态
   modifyFormRef.value?.resetFields();
 };
+
+const store = useStore();
+const userRole = computed(() => store.state.userInfo.role);
 </script>
 
 <style lang="scss" scoped>
 .el-table {
   margin-top: 50px;
+}
+.el-pagination {
+  margin-top: 20px;
+  justify-content: flex-end;
 }
 </style>
