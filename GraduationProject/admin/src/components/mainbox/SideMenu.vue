@@ -14,7 +14,7 @@
         <el-icon><avatar /></el-icon>
         <span>个人中心</span>
       </el-menu-item>
-      <el-sub-menu index="/user-manage">
+      <el-sub-menu index="/user-manage" v-admin>
         <template #title>
           <el-icon><grid /></el-icon>
           <span>用户管理</span>
@@ -44,7 +44,9 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-const route = useRoute()
+import { useStore } from "vuex";
+const route = useRoute();
+const store = useStore();
 
 // console.log(route.fullPath)
 import {
@@ -57,6 +59,15 @@ import {
   MessageBox,
   Pointer,
 } from "@element-plus/icons-vue";
+
+const vAdmin = {
+  mounted(el) {
+    // console.log(el)
+    if (store.state.userInfo.role !== 1) {
+      el.parentNode.removeChild(el)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

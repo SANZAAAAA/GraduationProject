@@ -116,6 +116,7 @@ const submitForm = async () => {
     if (res.ActionType === "OK") {
       // 存储用户信息
       store.commit("changeUserInfo", res.data);
+      store.commit("changeGetRouter", false);
       ElMessage.success("登录成功");
       // 路由跳转
       router.push("/home");
@@ -128,27 +129,6 @@ const submitForm = async () => {
   console.log("当前登录用户: ", res.data);
 };
 
-// //提交表单函数
-// const submitForm = async () => {
-//   loginFormRef.value.validate((valid) => {
-//     if (valid) {
-//       // localStorage.setItem("token", "login successs");
-//       axios.post("/adminapi/user/login", loginForm).then((res) => {
-//         console.log(res.data);
-//         if (res.data.ActionType === "OK") {
-//           // console.log(res.data.data)
-//           store.commit("changeUserInfo", res.data.data);
-//           console.log(res.data.data);
-//           router.push("/home");
-//           // axios拦截器设置token// localStorage.setItem("token", "login successs");
-//         } else {
-//           ElMessage.error("密码错误");
-//         }
-//       });
-//       // router.push("/home");
-//     }
-//   });
-// };
 
 const particlesLoaded = async (container) => {
   console.log("Particles container loaded", container);

@@ -15,6 +15,7 @@ const UserService = {
     // 移除敏感字段后返回
     if (isMatch) {
       const userObj = user.toObject();
+      userObj._id = userObj._id.toString(); // 关键转换步骤, 将_id从Object转换为String
       delete userObj.password;
       return userObj;
     }
@@ -72,7 +73,6 @@ const UserService = {
     );
   },
 
-
   add: async ({ account, password, role, gender }) => {
     const existingUser = await UserModel.findOne({ account });
     if (existingUser) return true;
@@ -87,7 +87,13 @@ const UserService = {
     return false;
   },
   getList: async () => {
-    return UserModel.find({},["account", "username", "role", "avatar", "gender",]).sort({ role: 1 });
+    return UserModel.find({}, [
+      "account",
+      "username",
+      "role",
+      "avatar",
+      "gender",
+    ]).sort({ role: 1 });
   },
   delList: async ({ _id }) => {
     return UserModel.deleteOne({ _id });
@@ -115,6 +121,10 @@ const UserService = {
         }
       );
     }
+  },
+  getRole: async () => {
+    const { role } = UserModel.findOne({ _id }).select("role");
+    return role;
   },
 };
 

@@ -1,6 +1,5 @@
 const UserService = require("../../service/admin/UserService");
 const JWT = require("../../util/JWT");
-const { passwordHash } = require("../../util/PasswordHandler");
 
 const UserController = {
   login: async (req, res) => {
@@ -15,6 +14,7 @@ const UserController = {
         Message: "账号或密码错误", // 模糊提示更安全
       });
     } else {
+      console.log("JWT中打印:", user._id);
       const token = JWT.generate(
         {
           _id: user._id,
@@ -38,35 +38,6 @@ const UserController = {
         },
       });
     }
-
-    // 已废弃, 无hash
-    // if (result.length === 0) {
-    //   res.send({
-    //     code: "-1",
-    //     error: "密码错误",
-    //   });
-    // } else {
-    //   // 生成token
-    //   const token = JWT.generate(
-    //     {
-    //       _id: result[0]._id,
-    //       account: result[0].account,
-    //     },
-    //     "1d"
-    //   );
-    //   res.header("Authorization", token);
-    //   res.send({
-    //     ActionType: "OK",
-    //     data: {
-    //       account: result[0].account, //账号
-    //       username: result[0].username, //用户名
-    //       gender: result[0].gender ? result[0].gender : 0, //性别, 0, 1, 2
-    //       introduction: result[0].introduction,
-    //       avatar: result[0].avatar, //头像
-    //       role: result[0].role, //管理1,编辑2
-    //     },
-    //   });
-    // }
   },
 
   signup: async (req, res) => {
@@ -189,6 +160,15 @@ const UserController = {
     });
     res.send({
       ActionType: "OK",
+    });
+  },
+
+  getRole: async (req, res) => {
+    const result = await UserService.getRole({ _id: req.params.id });
+    console.log(result);
+    res.send({
+      ActionType: "OK",
+      data: result,
     });
   },
 };

@@ -17,4 +17,4 @@ const JWT = {
 // setTimeout(() => {
 //     console.log(JWT.verify(token))
 // }, 11000);
-module.exports = JWT
+module.exports = JWT;

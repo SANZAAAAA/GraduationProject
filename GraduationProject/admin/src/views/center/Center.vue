@@ -55,12 +55,12 @@
               </el-select>
             </el-form-item>
             <el-form-item label="个人简介" prop="introduction" class="modify-intro">
-              <el-input type="textarea" rows="15" v-model="userForm.introduction" />
+              <el-input type="textarea" :rows="15" v-model="userForm.introduction" />
             </el-form-item>
             <el-form-item label="头像" prop="avatar">
               <Upload :avatar="userForm.avatar" @avatarChange="handleChangeAvatar" />
             </el-form-item>
-            <el-form-item class="center">
+            <el-form-item lable="" class="center">
               <el-col :span="3"> </el-col>
               <el-col :span="5">
                 <el-button type="primary" @click="submitForm()"> 更新</el-button>
@@ -105,7 +105,7 @@
             show-password
           />
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="">
           <el-col :span="4"></el-col>
           <el-col :span="7">
             <el-button type="primary" @click="submitPassword()"> 确认修改 </el-button>
@@ -118,6 +118,7 @@
     </el-drawer>
   </div>
 </template>
+
 <script setup>
 import { useStore } from "vuex";
 import { computed, ref, reactive } from "vue";
