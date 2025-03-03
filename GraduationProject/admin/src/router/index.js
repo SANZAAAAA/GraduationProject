@@ -5,6 +5,8 @@ import MainBox from "../views/MainBox.vue";
 import routescfg from "./config";
 import store from "@/store";
 import Signup from "@/views/Signup.vue";
+import Test from "@/views/test.vue";
+import Test2 from "@/views/test2.vue";
 
 const routes = [
   {
@@ -23,6 +25,16 @@ const routes = [
     component: MainBox,
     //DashBoard嵌套路由动态添加
   },
+  {
+    path:"/test",
+    name: "test",
+    component: Test,
+  },
+  {
+    path: "/test2",
+    name: "test2",
+    component: Test2,
+  }
 ];
 
 const router = createRouter({

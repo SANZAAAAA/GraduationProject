@@ -255,7 +255,6 @@ const submitForm = () => {
     if (!valid) return; // 验证不通过直接返回
 
     // 模拟提交表单
-    console.log(surveyForm);
     ElMessage.success("问卷创建成功");
   });
 };

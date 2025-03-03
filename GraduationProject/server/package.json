@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "test": "jest app.test.js",
     "start": "node-dev ./bin/www"
   },
   "dependencies": {

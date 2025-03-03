@@ -38,6 +38,12 @@
         <el-menu-item index="/surveys/dosurvey">做问卷</el-menu-item>
         <el-menu-item index="/surveys/summary">问卷总结</el-menu-item>
       </el-sub-menu>
+      <el-menu-item index="/test">
+        <span>测试</span>
+      </el-menu-item>
+      <el-menu-item index="/test2">
+        <span>测试2</span>
+      </el-menu-item>
     </el-menu>
   </el-aside>
 </template>

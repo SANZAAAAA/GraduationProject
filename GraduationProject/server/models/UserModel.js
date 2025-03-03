@@ -6,7 +6,6 @@ const userSchema = new mongoose.Schema({
   username: String, //昵称
   account: {
     //账号
-    // 覆盖 account 字段配置
     type: String,
     required: true, // 必填约束
     unique: true, // 关键：添加唯一索引
@@ -52,6 +51,15 @@ const surveySchema = new mongoose.Schema({
     required: true,
   },
   password: String,
+  cover: {
+    // 封面
+    type: String,
+    defalut: "",
+  },
+  isReleasing: {
+    type: Boolean,
+    default: false,
+  },
   createAt: {
     type: Date,
     default: Date.now,
@@ -59,12 +67,12 @@ const surveySchema = new mongoose.Schema({
   questions: [
     // 问题数组（支持动态添加）
     {
-      questionId: { type: String, required: true }, // 问题唯一标识（例如UUID）
+      questionIndex: { type: Number, required: true }, // 问题序号
       questionText: { type: String, required: true }, // 问题文本
       questionType: {
         // 问题类型
         type: String,
-        enum: ["single-choice", "multiple-choice", "text"],
+        enum: ["single-choice", "multiple-choice", "text", "rating"],
         required: true,
       },
       options: [{ type: String }], // 选项（仅单选/多选需要）
