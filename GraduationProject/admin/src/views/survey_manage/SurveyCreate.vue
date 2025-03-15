@@ -45,44 +45,89 @@
             <div class="card-header">
               <span class="header-title">问题列表</span>
               <div class="button-group">
-                <el-button type="primary" @click="questionDialogVisible = true">添加问题</el-button>
+                <el-button type="primary" @click="questionDialogVisible = true"
+                  >添加问题</el-button
+                >
               </div>
             </div>
           </template>
-          <el-table :data="surveyForm.questions" stripe style="width: 100%">
+          <el-table
+            :data="surveyForm.questions"
+            stripe
+            style="width: 100%"
+            row-key="id"
+            :expand-row-keys="expandedRowKeys"
+            @cell-click="expandChange"
+          >
             <el-table-column type="expand">
               <template #default="props">
-                <div>
-                  <p><strong>问题:</strong> {{ props.row.question }}</p>
-                  <p v-if="props.row.type === 'single-choice' || props.row.type === 'multiple-choice'"><strong>选项:</strong></p>
-                  <ul v-if="props.row.type === 'single-choice' || props.row.type === 'multiple-choice'">
-                    <li v-for="(option, index) in props.row.options" :key="index">
-                      {{ option }}
-                    </li>
-                  </ul>
+                <div class="expand-content">
+                  <div class="question-section">
+                    <h3 class="question-title">问题内容</h3>
+                    <el-text class="question-text" size="large">{{
+                      props.row.question
+                    }}</el-text>
+                  </div>
+
+                  <template
+                    v-if="
+                      props.row.type === 'single-choice' ||
+                      props.row.type === 'multiple-choice'
+                    "
+                  >
+                    <el-divider />
+                    <div class="options-section">
+                      <h4 class="options-title">选项列表</h4>
+                      <div class="options-list">
+                        <el-tag
+                          v-for="(option, index) in props.row.options"
+                          :key="index"
+                          class="option-item"
+                          type="info"
+                          effect="plain"
+                          round
+                        >
+                          <span class="option-index">{{ index + 1 }}.</span>
+                          {{ option }}
+                        </el-tag>
+                      </div>
+                    </div>
+                  </template>
                 </div>
               </template>
             </el-table-column>
             <el-table-column label="题号" prop="index" width="200" />
             <el-table-column label="类型" prop="type" width="200" />
             <el-table-column label="创建时间" prop="createdAt" width="300" />
-            <el-table-column label="操作">
+            <el-table-column label="操作" prop="action">
               <template #default="scope">
-                <el-button type="danger" @click="deleteSpecificQuestion(scope.$index)">删除</el-button>
+                <el-button type="danger" @click="deleteSpecificQuestion(scope.$index)"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
-            <el-table-column label="">
+            <el-table-column label="" prop="move">
               <template #default="scope">
                 <div class="action-buttons">
                   <!-- 上移按钮 -->
-                  <el-button :disabled="scope.$index === 0" @click="moveUp(scope.$index)" class="action-btn" link>
+                  <el-button
+                    :disabled="scope.$index === 0"
+                    @click="moveUp(scope.$index)"
+                    class="action-btn"
+                    link
+                  >
                     <el-icon :size="20">
                       <ArrowUp />
                     </el-icon>
                   </el-button>
 
                   <!-- 下移按钮 -->
-                  <el-button :disabled="scope.$index === surveyForm.questions.length - 1" @click="moveDown(scope.$index)" class="action-btn" link>
+                  <el-button
+                    :disabled="scope.$index === surveyForm.questions.length - 1"
+                    @click="moveDown(scope.$index)"
+                    class="action-btn"
+                    link
+                  >
                     <el-icon :size="20">
                       <ArrowDown />
                     </el-icon>
@@ -164,6 +209,7 @@ import { ElMessage } from "element-plus";
 import Upload from "@/components/upload/Upload.vue";
 import { ArrowUp, ArrowDown } from "@element-plus/icons-vue";
 
+const expandedRowKeys = ref([]);
 const surveyFormRef = ref();
 const surveyForm = reactive({
   title: "",
@@ -190,7 +236,10 @@ const newQuestion = reactive({
 const newOption = ref("");
 
 const deleteSpecificQuestion = (index) => {
+  const deletedId = surveyForm.questions[index].id;
   surveyForm.questions.splice(index, 1);
+  // 移除被删除问题的展开状态
+  expandedRowKeys.value = expandedRowKeys.value.filter((id) => id !== deletedId);
   updateQuestionIndexes();
 };
 
@@ -230,6 +279,26 @@ const confirmAddQuestion = () => {
   questionDialogVisible.value = false;
 };
 
+const expandChange = (row, col) => {
+  if (col.type === "expand" || col.property === "action" || col.property === "move") {
+    console.log("forbidden");
+    return;
+  }
+  if (expandedRowKeys.value.includes(row.id)) {
+    expandedRowKeys.value = expandedRowKeys.value.filter((id) => id !== row.id);
+  } else {
+    expandedRowKeys.value.push(row.id);
+  }
+};
+
+// // 用于测试点击表格单元格时的事件处理
+// const handle = (row, column, event, cell) => {
+//   console.log("Row is:\n", row);
+//   console.log("\nColum is:\n", column);
+//   console.log("\nEvent is:\n", event);
+//   console.log("\nCell is:\n", cell);
+// };
+
 const moveUp = (index) => {
   const currentQuestion = surveyForm.questions[index];
   surveyForm.questions[index] = surveyForm.questions[index - 1];
@@ -243,6 +312,24 @@ const moveDown = (index) => {
   surveyForm.questions[index + 1] = currentQuestion;
   updateQuestionIndexes();
 };
+
+// // 用于测试上移下移按钮
+// const moveUp = (index) => {
+//   // 创建新数组触发响应式更新
+//   const newQuestions = [...surveyForm.questions];
+//   [newQuestions[index], newQuestions[index - 1]] =
+//     [newQuestions[index - 1], newQuestions[index]];
+//   surveyForm.questions = newQuestions; // 必须赋值新数组
+//   updateQuestionIndexes();
+// };
+
+// const moveDown = (index) => {
+//   const newQuestions = [...surveyForm.questions];
+//   [newQuestions[index], newQuestions[index + 1]] = 
+//     [newQuestions[index + 1], newQuestions[index]];
+//   surveyForm.questions = newQuestions;
+//   updateQuestionIndexes();
+// };
 
 const updateQuestionIndexes = () => {
   surveyForm.questions.forEach((question, index) => {
@@ -280,7 +367,7 @@ const submitForm = () => {
   }
 }
 .el-table {
-  margin-top: 50px;
+  margin-top: 0px;
 }
 .action-buttons {
   display: flex;
@@ -304,5 +391,57 @@ const submitForm = () => {
 /* 处理禁用状态 */
 .is-disbled .el-icon {
   opacity: 0.5; /* 保持图标位置一致性 */
+}
+
+.expand-content {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 8px 0;
+
+  .question-section {
+    margin-bottom: 12px;
+
+    .question-title {
+      color: #606266;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .question-text {
+      color: #303133;
+      line-height: 1.6;
+    }
+  }
+
+  .options-section {
+    .options-title {
+      color: #606266;
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .options-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .option-item {
+      padding: 8px 12px;
+      font-size: 14px;
+
+      .option-index {
+        color: #909399;
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .el-divider {
+    margin: 16px 0;
+  }
 }
 </style>

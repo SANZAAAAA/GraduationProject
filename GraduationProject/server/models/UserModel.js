@@ -39,49 +39,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const surveySchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-  },
-  description: String,
-  creator: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-    required: true,
-  },
-  password: String,
-  cover: {
-    // 封面
-    type: String,
-    defalut: "",
-  },
-  isReleasing: {
-    type: Boolean,
-    default: false,
-  },
-  createAt: {
-    type: Date,
-    default: Date.now,
-  },
-  questions: [
-    // 问题数组（支持动态添加）
-    {
-      questionIndex: { type: Number, required: true }, // 问题序号
-      questionText: { type: String, required: true }, // 问题文本
-      questionType: {
-        // 问题类型
-        type: String,
-        enum: ["single-choice", "multiple-choice", "text", "rating"],
-        required: true,
-      },
-      options: [{ type: String }], // 选项（仅单选/多选需要）
-      required: { type: Boolean, default: false }, // 是否必填
-      createdAt: { type: Date, default: Date.now }, // 问题添加时间
-    },
-  ],
-});
-
 // 检查明文密码和哈希后密码是否相等
 userSchema.methods.comparePassword = async function (plainPassword) {
   const { comparePassword } = require("../util/PasswordHandler");
@@ -94,9 +51,8 @@ userSchema.statics.findByAccount = function (account) {
 };
 
 const UserModel = mongoose.model("user", userSchema);
-const SurveyModel = mongoose.model("survey", surveySchema);
 
-module.exports =  UserModel, SurveyModel ;
+module.exports = UserModel;
 
 // todo:
 //     1. 首页读取introduction
