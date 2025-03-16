@@ -1,4 +1,4 @@
-const { updateList } = require("../../controller/admin/UserController");
+// const { updateList } = require("../../controller/admin/UserController");
 const UserModel = require("../../models/UserModel");
 const { passwordHash } = require("../../util/PasswordHandler");
 

@@ -1,9 +1,9 @@
 import axios from "axios";
 
-function upload(path, userForm) {
+function upload(path, Form) {
     const params = new FormData();
-      for (let i in userForm) {
-        params.append(i, userForm[i]);
+      for (let i in Form) {
+        params.append(i, Form[i]);
       }
 
       //   console.log(params);

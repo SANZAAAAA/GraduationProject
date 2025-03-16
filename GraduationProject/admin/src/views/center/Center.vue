@@ -58,7 +58,7 @@
               <el-input type="textarea" :rows="15" v-model="userForm.introduction" />
             </el-form-item>
             <el-form-item label="头像" prop="avatar">
-              <Upload :avatar="userForm.avatar" @avatarChange="handleChangeAvatar" />
+              <Upload type="avatar" :image="userForm.avatar" @change="handleChangeAvatar" />
             </el-form-item>
             <el-form-item lable="" class="center">
               <el-col :span="3"> </el-col>

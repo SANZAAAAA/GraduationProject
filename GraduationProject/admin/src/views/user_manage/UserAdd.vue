@@ -11,15 +11,26 @@
         class="demo-ruleForm"
       >
         <el-form-item label="账号" prop="account">
-          <el-input v-model="userForm.account" placeholder="初始用户名默认为账号" />
+          <el-input
+            v-model="userForm.account"
+            placeholder="请输入账号"
+            style="width: 500px"
+          />
+          <el-tooltip content="初始用户名默认为账号" placement="right-start">
+            <el-icon :size="30" style="color: darkgrey">&nbsp;<InfoFilled /></el-icon>
+          </el-tooltip>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input
             v-model="userForm.password"
             type="password"
-            placeholder="密码不低于6位"
+            placeholder="请输入密码"
             show-password
+            style="width: 500px"
           />
+          <el-tooltip content="密码不低于6位" placement="right-start">
+            <el-icon :size="30" style="color: darkgrey">&nbsp;<InfoFilled /></el-icon>
+          </el-tooltip>
         </el-form-item>
         <el-form-item label="角色" prop="role">
           <el-select v-model="userForm.role" placeholder="选择角色" style="width: 240px">
@@ -46,7 +57,8 @@
 <script setup>
 import { ref, reactive, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useStore } from 'vuex';
+import { useStore } from "vuex";
+import { InfoFilled } from "@element-plus/icons-vue";
 import addUser from "@/util/addUser";
 
 const options = [
@@ -117,5 +129,13 @@ const submitForm = () => {
       text-align: center;
     }
   }
+  // /* 更改tip背景色 */
+  //.el-tooltip__popper.is-dark {
+  //  background: rgba(70, 76, 91, 0.9) !important;
+  //  color: #fff;
+  //  max-width: 18%;
+  //  line-height: 24px;
+  //}
 }
+
 </style>

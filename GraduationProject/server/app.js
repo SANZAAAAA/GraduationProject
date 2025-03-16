@@ -6,7 +6,9 @@ var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+var surveysRouter = require("./routes/surveys");
 const UserRouter = require("./routes/admin/UserRouter");
+const SurveyRouter = require("./routes/admin/SurveyRouter")
 const JWT = require("./util/JWT");
 
 var app = express();
@@ -23,6 +25,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/surveys", surveysRouter);
 
 /*
   /adminapi/* - 后台使用
@@ -59,6 +62,7 @@ app.use((req, res, next) => {
 });
 
 app.use(UserRouter);
+app.use(SurveyRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
